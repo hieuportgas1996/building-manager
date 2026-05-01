@@ -18,6 +18,7 @@ public class InvoiceService : IInvoiceService
         var query = _db.Invoices
             .Include(i => i.Contract).ThenInclude(c => c.Company)
             .Include(i => i.Contract).ThenInclude(c => c.Office)
+            .Include(i => i.Company)
             .AsQueryable();
 
         if (year.HasValue) query = query.Where(i => i.InvoiceYear == year.Value);
@@ -34,6 +35,7 @@ public class InvoiceService : IInvoiceService
         var i = await _db.Invoices
             .Include(x => x.Contract).ThenInclude(c => c.Company)
             .Include(x => x.Contract).ThenInclude(c => c.Office)
+            .Include(x => x.Company)
             .FirstOrDefaultAsync(x => x.Id == id);
         return i == null ? null : MapToDto(i);
     }
@@ -47,6 +49,39 @@ public class InvoiceService : IInvoiceService
             .OrderByDescending(i => i.InvoiceYear).ThenByDescending(i => i.InvoiceMonth)
             .Select(i => MapToDto(i))
             .ToListAsync();
+    }
+
+    public async Task<InvoiceDto> CreateFromPdfAsync(CreateInvoiceFromPdfDto dto)
+    {
+        // upsert company by taxcode
+        var company = await _db.Companies.FirstOrDefaultAsync(c => c.TaxCode == dto.TaxCode);
+        if (company == null)
+        {
+            company = new Company
+            {
+                Name = dto.CompanyName,
+                TaxCode = dto.TaxCode,
+                TaxAddress = dto.TaxAddress,
+                CreatedAt = DateTime.UtcNow,
+            };
+            _db.Companies.Add(company);
+            await _db.SaveChangesAsync();
+        }
+
+        var invoice = new Invoice
+        {
+            CompanyId = company.Id,
+            InvoiceYear = dto.InvoiceYear,
+            InvoiceMonth = dto.InvoiceMonth,
+            RentAmount = dto.RentAmount,
+            TotalAmount = dto.RentAmount,
+            DueDate = new DateTime(dto.InvoiceYear, dto.InvoiceMonth,
+                DateTime.DaysInMonth(dto.InvoiceYear, dto.InvoiceMonth)),
+            Status = InvoiceStatus.Pending,
+        };
+        _db.Invoices.Add(invoice);
+        await _db.SaveChangesAsync();
+        return (await GetByIdAsync(invoice.Id))!;
     }
 
     public async Task<InvoiceDto> CreateAsync(CreateInvoiceDto dto)
@@ -133,6 +168,7 @@ public class InvoiceService : IInvoiceService
         var recentInvoices = await _db.Invoices
             .Include(i => i.Contract).ThenInclude(c => c.Company)
             .Include(i => i.Contract).ThenInclude(c => c.Office)
+            .Include(i => i.Company)
             .OrderByDescending(i => i.Id)
             .Take(5)
             .Select(i => MapToDto(i))
@@ -171,7 +207,8 @@ public class InvoiceService : IInvoiceService
     {
         Id = i.Id,
         ContractId = i.ContractId,
-        CompanyName = i.Contract?.Company?.Name ?? string.Empty,
+        CompanyId = i.CompanyId,
+        CompanyName = i.Contract?.Company?.Name ?? i.Company?.Name ?? string.Empty,
         OfficeName = i.Contract?.Office?.OfficeName ?? string.Empty,
         InvoiceYear = i.InvoiceYear,
         InvoiceMonth = i.InvoiceMonth,

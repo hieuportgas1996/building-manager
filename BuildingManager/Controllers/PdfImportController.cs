@@ -1,4 +1,5 @@
 using BuildingManager.Application.DTOs;
+using BuildingManager.Application.Interfaces;
 using BuildingManager.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,12 @@ namespace BuildingManager.Controllers;
 public class PdfImportController : ControllerBase
 {
     private readonly PdfParserService _parser;
+    private readonly IInvoiceService _invoiceService;
 
-    public PdfImportController(PdfParserService parser)
+    public PdfImportController(PdfParserService parser, IInvoiceService invoiceService)
     {
         _parser = parser;
+        _invoiceService = invoiceService;
     }
 
     [HttpPost("parse")]
@@ -27,6 +30,32 @@ public class PdfImportController : ControllerBase
         using var stream = file.OpenReadStream();
         var result = _parser.Parse(stream);
         return Ok(result);
+    }
+
+    [HttpPost("import")]
+    public async Task<IActionResult> Import([FromBody] CreateInvoiceFromPdfDto dto)
+    {
+        var invoice = await _invoiceService.CreateFromPdfAsync(dto);
+        return Ok(invoice);
+    }
+
+    [HttpPost("import-multiple")]
+    public async Task<IActionResult> ImportMultiple([FromBody] List<CreateInvoiceFromPdfDto> dtos)
+    {
+        var results = new List<object>();
+        foreach (var dto in dtos)
+        {
+            try
+            {
+                var invoice = await _invoiceService.CreateFromPdfAsync(dto);
+                results.Add(new { success = true, invoiceId = invoice.Id, companyName = invoice.CompanyName });
+            }
+            catch (Exception ex)
+            {
+                results.Add(new { success = false, companyName = dto.CompanyName, error = ex.Message });
+            }
+        }
+        return Ok(results);
     }
 
     [HttpPost("parse-multiple")]

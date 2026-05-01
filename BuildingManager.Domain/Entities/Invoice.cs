@@ -5,7 +5,8 @@ namespace BuildingManager.Domain.Entities;
 public class Invoice
 {
     public int Id { get; set; }
-    public int ContractId { get; set; }
+    public int? ContractId { get; set; }
+    public int? CompanyId { get; set; }
     public int InvoiceYear { get; set; }
     public int InvoiceMonth { get; set; }
     public decimal RentAmount { get; set; }
@@ -18,5 +19,6 @@ public class Invoice
     public InvoiceStatus Status { get; set; } = InvoiceStatus.Pending;
     public string? Notes { get; set; }
 
-    public Contract Contract { get; set; } = null!;
+    public Contract? Contract { get; set; }
+    public Company? Company { get; set; }
 }

@@ -38,7 +38,15 @@ public class AppDbContext : DbContext
             .HasOne(i => i.Contract)
             .WithMany(c => c.Invoices)
             .HasForeignKey(i => i.ContractId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Invoice>()
+            .HasOne(i => i.Company)
+            .WithMany()
+            .HasForeignKey(i => i.CompanyId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Office>()
             .Property(o => o.PricePerM2)
