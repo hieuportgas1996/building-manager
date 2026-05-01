@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.36" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.36" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\BuildingManager.Domain\**\*.cs" LinkBase="Domain" />
+    <Compile Include="..\BuildingManager.Application\**\*.cs" LinkBase="Application" />
+    <Compile Include="..\BuildingManager.Infrastructure\**\*.cs" LinkBase="Infrastructure" />
+  </ItemGroup>
+
+</Project>

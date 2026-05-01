@@ -1,0 +1,14 @@
+# .NET
+**/bin/
+**/obj/
+**/*.user
+BuildingManager/appsettings.Development.json
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Misc
+.vs/
+*.suo
+.DS_Store
