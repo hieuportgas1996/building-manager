@@ -10,6 +10,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connStr));
 
 builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddSingleton<PdfParserService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IOfficeService, OfficeService>();

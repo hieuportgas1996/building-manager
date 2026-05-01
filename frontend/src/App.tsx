@@ -7,6 +7,7 @@ import CompaniesPage from './pages/Companies';
 import OfficesPage from './pages/Offices';
 import ContractsPage from './pages/Contracts';
 import InvoicesPage from './pages/Invoices';
+import PdfImportPage from './pages/PdfImport';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/offices" element={<OfficesPage />} />
             <Route path="/contracts" element={<ContractsPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/pdf-import" element={<PdfImportPage />} />
           </Routes>
         </AppLayout>
       </BrowserRouter>

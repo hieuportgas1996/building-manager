@@ -74,6 +74,17 @@ export interface Invoice {
   notes?: string;
 }
 
+export interface PdfImportResult {
+  companyName: string;
+  taxCode: string;
+  taxAddress: string;
+  month: number;
+  year: number;
+  monthlyRent: number;
+  parseSuccess: boolean;
+  parseError?: string;
+}
+
 export interface MonthlyRevenue {
   year: number;
   month: number;
