@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, InputNumber, Select, Space, Popconfirm, message, Grid } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { officeService } from '../../services/officeService';
+import { buildingService, BuildingDto, FloorDto } from '../../services/buildingService';
 import { Office, OfficeStatus } from '../../types';
 import { formatCurrency } from '../../utils/format';
 import { OfficeStatusTag } from '../../components/StatusTag';
@@ -10,6 +11,8 @@ const { useBreakpoint } = Grid;
 
 export default function OfficesPage() {
   const [offices, setOffices] = useState<Office[]>([]);
+  const [buildings, setBuildings] = useState<BuildingDto[]>([]);
+  const [floors, setFloors] = useState<FloorDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Office | null>(null);
@@ -19,22 +22,48 @@ export default function OfficesPage() {
 
   const load = () => {
     setLoading(true);
-    officeService.getAll().then(setOffices).finally(() => setLoading(false));
+    Promise.all([officeService.getAll(), buildingService.getAll()])
+      .then(([o, b]) => { setOffices(o); setBuildings(b); })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => { load(); }, []);
 
-  const openCreate = () => { setEditing(null); form.resetFields(); setModalOpen(true); };
-  const openEdit = (o: Office) => { setEditing(o); form.setFieldsValue(o); setModalOpen(true); };
+  const openCreate = () => {
+    setEditing(null);
+    form.resetFields();
+    setFloors([]);
+    setModalOpen(true);
+  };
+
+  const openEdit = (o: Office) => {
+    setEditing(o);
+    // load floors for the building of this office
+    const building = buildings.find(b => b.floors.some(f => f.id === o.floorId));
+    if (building) {
+      form.setFieldsValue({ ...o, buildingId: building.id });
+      setFloors(building.floors);
+    } else {
+      form.setFieldsValue(o);
+    }
+    setModalOpen(true);
+  };
+
+  const handleBuildingChange = (buildingId: number) => {
+    const b = buildings.find(b => b.id === buildingId);
+    setFloors(b?.floors ?? []);
+    form.setFieldValue('floorId', undefined);
+  };
 
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
+      const { buildingId: _, ...dto } = values;
       if (editing) {
-        await officeService.update(editing.id, values);
+        await officeService.update(editing.id, dto);
         message.success('Cập nhật thành công');
       } else {
-        await officeService.create(values);
+        await officeService.create(dto);
         message.success('Thêm mới thành công');
       }
       setModalOpen(false);
@@ -64,8 +93,7 @@ export default function OfficesPage() {
       ),
     },
     {
-      title: '',
-      width: 72,
+      title: '', width: 72,
       render: (_: unknown, record: Office) => (
         <Space size={4}>
           <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(record)} />
@@ -108,37 +136,45 @@ export default function OfficesPage() {
       </div>
 
       <Table
-        dataSource={offices}
-        columns={isMobile ? mobileColumns : desktopColumns}
-        rowKey="id"
-        loading={loading}
-        scroll={{ x: isMobile ? undefined : 900 }}
-        size="small"
+        dataSource={offices} columns={isMobile ? mobileColumns : desktopColumns}
+        rowKey="id" loading={loading}
+        scroll={{ x: isMobile ? undefined : 900 }} size="small"
       />
 
       <Modal
         title={editing ? 'Chỉnh sửa văn phòng' : 'Thêm văn phòng mới'}
-        open={modalOpen}
-        onOk={handleSave}
-        onCancel={() => setModalOpen(false)}
-        okText="Lưu"
-        cancelText="Hủy"
+        open={modalOpen} onOk={handleSave} onCancel={() => setModalOpen(false)}
+        okText="Lưu" cancelText="Hủy"
         width={isMobile ? '100%' : 480}
         style={isMobile ? { top: 0, margin: 0 } : {}}
         styles={isMobile ? { body: { maxHeight: 'calc(100dvh - 110px)', overflowY: 'auto' } } : {}}
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="floorId" label="Floor ID" rules={[{ required: true }]}>
-            <InputNumber style={{ width: '100%' }} min={1} inputMode="numeric" />
+          <Form.Item name="buildingId" label="Tòa nhà" rules={[{ required: true, message: 'Chọn tòa nhà' }]}>
+            <Select
+              placeholder="Chọn tòa nhà"
+              options={buildings.map(b => ({ value: b.id, label: b.name }))}
+              onChange={handleBuildingChange}
+            />
+          </Form.Item>
+          <Form.Item name="floorId" label="Tầng" rules={[{ required: true, message: 'Chọn tầng' }]}>
+            <Select
+              placeholder={floors.length ? 'Chọn tầng' : 'Chọn tòa nhà trước'}
+              disabled={!floors.length}
+              options={floors.map(f => ({ value: f.id, label: `Tầng ${f.floorNumber}` }))}
+            />
           </Form.Item>
           <Form.Item name="officeName" label="Tên văn phòng" rules={[{ required: true }]}>
-            <Input />
+            <Input placeholder="VD: P101" />
           </Form.Item>
           <Form.Item name="area" label="Diện tích (m²)" rules={[{ required: true }]}>
             <InputNumber style={{ width: '100%' }} min={1} inputMode="decimal" />
           </Form.Item>
           <Form.Item name="pricePerM2" label="Giá/m² (VND)" rules={[{ required: true }]}>
-            <InputNumber style={{ width: '100%' }} min={0} step={10000} inputMode="numeric" formatter={v => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
+            <InputNumber
+              style={{ width: '100%' }} min={0} step={10000} inputMode="numeric"
+              formatter={v => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
           </Form.Item>
           {editing && (
             <Form.Item name="status" label="Trạng thái">

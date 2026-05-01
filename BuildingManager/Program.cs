@@ -11,6 +11,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddSingleton<PdfParserService>();
+builder.Services.AddScoped<BuildingService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IOfficeService, OfficeService>();

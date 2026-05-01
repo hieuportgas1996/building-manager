@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Layout, Menu, Drawer, Button, theme } from 'antd';
 import {
   DashboardOutlined, BankOutlined, FileTextOutlined,
-  DollarOutlined, HomeOutlined, MenuOutlined, FilePdfOutlined,
+  DollarOutlined, HomeOutlined, MenuOutlined, FilePdfOutlined, AppstoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -11,7 +11,8 @@ const { Header, Sider, Content } = Layout;
 const menuItems = [
   { key: '/', icon: <DashboardOutlined />, label: 'Dashboard' },
   { key: '/companies', icon: <BankOutlined />, label: 'Công ty' },
-  { key: '/offices', icon: <HomeOutlined />, label: 'Văn phòng' },
+  { key: '/buildings', icon: <HomeOutlined />, label: 'Tòa nhà' },
+  { key: '/offices', icon: <AppstoreOutlined />, label: 'Văn phòng' },
   { key: '/contracts', icon: <FileTextOutlined />, label: 'Hợp đồng' },
   { key: '/invoices', icon: <DollarOutlined />, label: 'Hóa đơn' },
   { key: '/pdf-import', icon: <FilePdfOutlined />, label: 'Import PDF' },
