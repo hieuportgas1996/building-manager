@@ -42,35 +42,35 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Office>()
             .Property(o => o.PricePerM2)
-            .HasColumnType("decimal(18,2)");
+            .HasColumnType("numeric(18,2)");
 
         modelBuilder.Entity<Office>()
             .Property(o => o.Area)
-            .HasColumnType("decimal(18,2)");
+            .HasColumnType("numeric(18,2)");
 
         modelBuilder.Entity<Contract>()
             .Property(c => c.MonthlyRent)
-            .HasColumnType("decimal(18,2)");
+            .HasColumnType("numeric(18,2)");
 
         modelBuilder.Entity<Contract>()
             .Property(c => c.Deposit)
-            .HasColumnType("decimal(18,2)");
+            .HasColumnType("numeric(18,2)");
 
         modelBuilder.Entity<Invoice>()
-            .Property(i => i.RentAmount).HasColumnType("decimal(18,2)");
+            .Property(i => i.RentAmount).HasColumnType("numeric(18,2)");
         modelBuilder.Entity<Invoice>()
-            .Property(i => i.ElectricityAmount).HasColumnType("decimal(18,2)");
+            .Property(i => i.ElectricityAmount).HasColumnType("numeric(18,2)");
         modelBuilder.Entity<Invoice>()
-            .Property(i => i.WaterAmount).HasColumnType("decimal(18,2)");
+            .Property(i => i.WaterAmount).HasColumnType("numeric(18,2)");
         modelBuilder.Entity<Invoice>()
-            .Property(i => i.ServiceFee).HasColumnType("decimal(18,2)");
+            .Property(i => i.ServiceFee).HasColumnType("numeric(18,2)");
         modelBuilder.Entity<Invoice>()
-            .Property(i => i.TotalAmount).HasColumnType("decimal(18,2)");
+            .Property(i => i.TotalAmount).HasColumnType("numeric(18,2)");
 
         modelBuilder.Entity<Building>()
-            .Property(b => b.TotalArea).HasColumnType("decimal(18,2)");
+            .Property(b => b.TotalArea).HasColumnType("numeric(18,2)");
 
         modelBuilder.Entity<Floor>()
-            .Property(f => f.TotalArea).HasColumnType("decimal(18,2)");
+            .Property(f => f.TotalArea).HasColumnType("numeric(18,2)");
     }
 }
