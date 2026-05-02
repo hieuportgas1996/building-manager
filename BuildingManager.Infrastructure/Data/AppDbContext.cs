@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<Contract> Contracts => Set<Contract>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<BankTransaction> BankTransactions => Set<BankTransaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -80,5 +81,15 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Floor>()
             .Property(f => f.TotalArea).HasColumnType("numeric(18,2)");
+
+        modelBuilder.Entity<BankTransaction>()
+            .Property(t => t.TransferAmount).HasColumnType("numeric(18,2)");
+
+        modelBuilder.Entity<BankTransaction>()
+            .HasOne(t => t.MatchedInvoice)
+            .WithMany()
+            .HasForeignKey(t => t.MatchedInvoiceId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

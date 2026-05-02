@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/Admin/Downloads/companyinfo/**)"
+      "Read(//c/Users/Admin/Downloads/companyinfo/**)",
+      "Bash(dotnet build *)",
+      "Bash(npm run *)"
     ]
   }
 }

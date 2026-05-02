@@ -3,6 +3,7 @@ import { Layout, Menu, Drawer, Button, theme } from 'antd';
 import {
   DashboardOutlined, BankOutlined, FileTextOutlined,
   DollarOutlined, HomeOutlined, MenuOutlined, FilePdfOutlined, AppstoreOutlined,
+  TransactionOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -15,12 +16,13 @@ const menuItems = [
   { key: '/offices', icon: <AppstoreOutlined />, label: 'Văn phòng' },
   { key: '/contracts', icon: <FileTextOutlined />, label: 'Hợp đồng' },
   { key: '/invoices', icon: <DollarOutlined />, label: 'Hóa đơn' },
+  { key: '/bank-transactions', icon: <TransactionOutlined />, label: 'Giao dịch NH' },
   { key: '/pdf-import', icon: <FilePdfOutlined />, label: 'Import PDF' },
 ];
 
 const LOGO = (
   <div style={{ color: '#fff', padding: '16px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1px solid #333' }}>
-    🏢 Building Manager
+    🏢 Trung Hiếu Building
   </div>
 );
 
