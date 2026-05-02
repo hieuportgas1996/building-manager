@@ -58,7 +58,7 @@ public class BankTransactionService
         {
             tx.MatchedInvoiceId = matched.Id;
             matched.Status = InvoiceStatus.Paid;
-            matched.PaidDate = tx.TransactionDate;
+            matched.PaidDate = DateTime.SpecifyKind(tx.TransactionDate, DateTimeKind.Utc);
         }
 
         _db.BankTransactions.Add(tx);
@@ -74,7 +74,7 @@ public class BankTransactionService
 
         tx.MatchedInvoiceId = inv.Id;
         inv.Status = InvoiceStatus.Paid;
-        inv.PaidDate = tx.TransactionDate;
+        inv.PaidDate = DateTime.SpecifyKind(tx.TransactionDate, DateTimeKind.Utc);
         await _db.SaveChangesAsync();
 
         return await _db.BankTransactions
@@ -168,7 +168,8 @@ public class BankTransactionService
 
     private static DateTime ParseDate(string s)
     {
-        if (DateTime.TryParse(s, out var dt)) return dt;
+        if (DateTime.TryParse(s, out var dt))
+            return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
         return DateTime.UtcNow;
     }
 

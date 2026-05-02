@@ -24,7 +24,6 @@ public class BankTransactionsController : ControllerBase
     [HttpPost("webhook/sepay")]
     public async Task<IActionResult> SepayWebhook([FromBody] SepayWebhookDto dto)
     {
-        // Bearer token auth (configure SePay to send same token)
         var expectedToken = _config["Sepay:ApiKey"];
         if (!string.IsNullOrEmpty(expectedToken))
         {
@@ -36,8 +35,15 @@ public class BankTransactionsController : ControllerBase
             }
         }
 
-        var result = await _service.ProcessWebhookAsync(dto);
-        return Ok(new { success = true, transactionId = result.Id, matched = result.MatchedInvoiceId });
+        try
+        {
+            var result = await _service.ProcessWebhookAsync(dto);
+            return Ok(new { success = true, transactionId = result.Id, matched = result.MatchedInvoiceId });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { success = false, error = ex.Message, inner = ex.InnerException?.Message });
+        }
     }
 
     [HttpPost("{transactionId}/match/{invoiceId}")]
