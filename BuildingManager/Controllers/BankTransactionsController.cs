@@ -76,4 +76,18 @@ public class BankTransactionsController : ControllerBase
         var result = await _service.ManualMatchAsync(transactionId, invoiceId);
         return result == null ? NotFound() : Ok(result);
     }
+
+    [HttpPost("{transactionId}/unmatch")]
+    public async Task<IActionResult> Unmatch(int transactionId, [FromQuery] bool revertInvoice = true)
+    {
+        var result = await _service.UnmatchAsync(transactionId, revertInvoice);
+        return result == null ? NotFound() : Ok(result);
+    }
+
+    [HttpDelete("{transactionId}")]
+    public async Task<IActionResult> Delete(int transactionId)
+    {
+        var success = await _service.DeleteAsync(transactionId);
+        return success ? NoContent() : NotFound();
+    }
 }

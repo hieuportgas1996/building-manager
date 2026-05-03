@@ -138,6 +138,33 @@ public class BankTransactionService
             .FirstAsync();
     }
 
+    public async Task<BankTransactionDto?> UnmatchAsync(int transactionId, bool revertInvoice)
+    {
+        var tx = await _db.BankTransactions
+            .Include(t => t.MatchedInvoice)
+            .FirstOrDefaultAsync(t => t.Id == transactionId);
+        if (tx == null) return null;
+
+        if (revertInvoice && tx.MatchedInvoice != null)
+        {
+            tx.MatchedInvoice.Status = InvoiceStatus.Pending;
+            tx.MatchedInvoice.PaidDate = null;
+        }
+
+        tx.MatchedInvoiceId = null;
+        await _db.SaveChangesAsync();
+        return MapToDto(tx);
+    }
+
+    public async Task<bool> DeleteAsync(int transactionId)
+    {
+        var tx = await _db.BankTransactions.FindAsync(transactionId);
+        if (tx == null) return false;
+        _db.BankTransactions.Remove(tx);
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
     private async Task<Invoice?> TryMatchInvoiceAsync(BankTransaction tx)
     {
         var content = NormalizeText(tx.Content);
@@ -222,7 +249,12 @@ public class BankTransactionService
     private static DateTime ParseDate(string s)
     {
         if (DateTime.TryParse(s, out var dt))
-            return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+        {
+            // SePay/Casso send local Vietnam time (UTC+7) without timezone info.
+            // Treat as VN time, then convert to UTC for storage.
+            var vnTime = DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
+            return DateTime.SpecifyKind(vnTime.AddHours(-7), DateTimeKind.Utc);
+        }
         return DateTime.UtcNow;
     }
 

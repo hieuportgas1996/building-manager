@@ -16,4 +16,8 @@ export const bankTransactionService = {
   getAll: () => api.get<BankTransaction[]>('/banktransactions').then(r => r.data),
   manualMatch: (transactionId: number, invoiceId: number) =>
     api.post<BankTransaction>(`/banktransactions/${transactionId}/match/${invoiceId}`).then(r => r.data),
+  unmatch: (transactionId: number, revertInvoice = true) =>
+    api.post<BankTransaction>(`/banktransactions/${transactionId}/unmatch?revertInvoice=${revertInvoice}`).then(r => r.data),
+  delete: (transactionId: number) =>
+    api.delete(`/banktransactions/${transactionId}`),
 };
