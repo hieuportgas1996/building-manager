@@ -94,8 +94,10 @@ export default function CompaniesPage() {
     { title: 'Tên công ty', dataIndex: 'name', width: 200, ellipsis: true },
     { title: 'Mã số thuế', dataIndex: 'taxCode', width: 140 },
     { title: 'Địa chỉ thuế', dataIndex: 'taxAddress', ellipsis: true },
-    { title: 'Liên hệ', dataIndex: 'contactPerson', width: 130, ellipsis: true },
-    { title: 'SĐT', dataIndex: 'contactPhone', width: 130 },
+    {
+      title: 'Email', dataIndex: 'contactEmail', width: 200, ellipsis: true,
+      render: (v?: string) => v ? <a href={`mailto:${v}`}>{v}</a> : '-',
+    },
     {
       title: 'HĐ hiệu lực', dataIndex: 'activeContractsCount', width: 110,
       render: (v: number) => <Tag color={v > 0 ? 'green' : 'default'}>{v} hợp đồng</Tag>,
@@ -153,14 +155,8 @@ export default function CompaniesPage() {
           <Form.Item name="taxAddress" label="Địa chỉ thuế" rules={[{ required: true, message: 'Nhập địa chỉ thuế' }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="contactPerson" label="Người liên hệ">
-            <Input />
-          </Form.Item>
-          <Form.Item name="contactPhone" label="Số điện thoại">
-            <Input inputMode="tel" />
-          </Form.Item>
           <Form.Item name="contactEmail" label="Email">
-            <Input type="email" inputMode="email" />
+            <Input type="email" inputMode="email" placeholder="example@company.com" />
           </Form.Item>
         </Form>
       </Modal>
