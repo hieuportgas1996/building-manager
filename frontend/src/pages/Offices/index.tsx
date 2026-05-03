@@ -83,6 +83,12 @@ export default function OfficesPage() {
 
   const mobileColumns = [
     {
+      title: 'STT',
+      width: 40,
+      align: 'center' as const,
+      render: (_: unknown, __: Office, idx: number) => idx + 1,
+    },
+    {
       title: 'Văn phòng',
       render: (_: unknown, r: Office) => (
         <div>
@@ -106,6 +112,12 @@ export default function OfficesPage() {
   ];
 
   const desktopColumns = [
+    {
+      title: 'STT',
+      width: 60,
+      align: 'center' as const,
+      render: (_: unknown, __: Office, idx: number) => idx + 1,
+    },
     { title: 'Tên VP', dataIndex: 'officeName', width: 100 },
     { title: 'Tòa nhà', dataIndex: 'buildingName', ellipsis: true },
     { title: 'Tầng', dataIndex: 'floorNumber', width: 70 },

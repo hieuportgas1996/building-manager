@@ -46,6 +46,12 @@ export default function BankTransactionsPage() {
 
   const columns = [
     {
+      title: 'STT',
+      width: 60,
+      align: 'center' as const,
+      render: (_: unknown, __: BankTransaction, idx: number) => idx + 1,
+    },
+    {
       title: 'Thời gian',
       dataIndex: 'transactionDate',
       width: 140,
@@ -92,6 +98,12 @@ export default function BankTransactionsPage() {
   ];
 
   const mobileColumns = [
+    {
+      title: 'STT',
+      width: 40,
+      align: 'center' as const,
+      render: (_: unknown, __: BankTransaction, idx: number) => idx + 1,
+    },
     {
       title: 'Giao dịch',
       render: (_: unknown, t: BankTransaction) => (

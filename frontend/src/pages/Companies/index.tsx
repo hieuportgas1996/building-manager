@@ -53,6 +53,12 @@ export default function CompaniesPage() {
 
   const mobileColumns = [
     {
+      title: 'STT',
+      width: 40,
+      align: 'center' as const,
+      render: (_: unknown, __: Company, idx: number) => idx + 1,
+    },
+    {
       title: 'Công ty',
       render: (_: unknown, r: Company) => (
         <div>
@@ -79,6 +85,12 @@ export default function CompaniesPage() {
   ];
 
   const desktopColumns = [
+    {
+      title: 'STT',
+      width: 60,
+      align: 'center' as const,
+      render: (_: unknown, __: Company, idx: number) => idx + 1,
+    },
     { title: 'Tên công ty', dataIndex: 'name', width: 200, ellipsis: true },
     { title: 'Mã số thuế', dataIndex: 'taxCode', width: 140 },
     { title: 'Địa chỉ thuế', dataIndex: 'taxAddress', ellipsis: true },

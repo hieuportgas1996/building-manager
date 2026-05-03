@@ -70,6 +70,12 @@ export default function ContractsPage() {
 
   const mobileColumns = [
     {
+      title: 'STT',
+      width: 40,
+      align: 'center' as const,
+      render: (_: unknown, __: Contract, idx: number) => idx + 1,
+    },
+    {
       title: 'Hợp đồng',
       render: (_: unknown, r: Contract) => (
         <div>
@@ -97,6 +103,12 @@ export default function ContractsPage() {
   ];
 
   const desktopColumns = [
+    {
+      title: 'STT',
+      width: 60,
+      align: 'center' as const,
+      render: (_: unknown, __: Contract, idx: number) => idx + 1,
+    },
     { title: 'Công ty', dataIndex: 'companyName', width: 180, ellipsis: true },
     { title: 'VP', dataIndex: 'officeName', width: 80 },
     { title: 'Tầng', dataIndex: 'floorInfo', width: 80 },

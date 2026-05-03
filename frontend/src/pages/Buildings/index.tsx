@@ -79,6 +79,12 @@ export default function BuildingsPage() {
   };
 
   const floorColumns = [
+    {
+      title: 'STT',
+      width: 60,
+      align: 'center' as const,
+      render: (_: unknown, __: FloorDto, idx: number) => idx + 1,
+    },
     { title: 'Tầng', dataIndex: 'floorNumber', width: 80, render: (v: number) => `Tầng ${v}` },
     { title: 'Diện tích', dataIndex: 'totalArea', width: 120, render: (v: number) => `${v} m²` },
     { title: 'Văn phòng', dataIndex: 'officeCount', width: 100, render: (v: number) => <Tag>{v} VP</Tag> },

@@ -92,6 +92,12 @@ export default function PdfImportPage() {
 
   const columns = [
     {
+      title: 'STT',
+      width: 50,
+      align: 'center' as const,
+      render: (_: unknown, __: ParsedRow, idx: number) => idx + 1,
+    },
+    {
       title: 'File',
       dataIndex: 'fileName',
       width: 130,
