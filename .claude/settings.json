@@ -8,7 +8,15 @@
       "Bash(git commit *)",
       "Bash(git push *)",
       "Bash(curl -s \"https://building-manager-production-c56e.up.railway.app/api/banktransactions\")",
-      "Bash(curl -s -X POST \"https://building-manager-production-c56e.up.railway.app/api/banktransactions/webhook/sepay\" -H \"Content-Type: application/json\" -H \"Authorization: Apikey test\" -d '{\"gateway\":\"TPBank\",\"transactionDate\":\"2026-05-02 13:47:00\",\"accountNumber\":\"18883868386\",\"subAccount\":null,\"code\":null,\"content\":\"Cong ty tnhh song viet\",\"transferType\":\"in\",\"description\":\"BankAPINotify Cong ty tnhh song viet\",\"transferAmount\":10000,\"referenceCode\":\"203CTMB261222068\",\"accumulated\":648829,\"id\":55038081}' -w \"\\\\nSTATUS: %{http_code}\\\\n\")"
+      "Bash(curl -s -X POST \"https://building-manager-production-c56e.up.railway.app/api/banktransactions/webhook/sepay\" -H \"Content-Type: application/json\" -H \"Authorization: Apikey test\" -d '{\"gateway\":\"TPBank\",\"transactionDate\":\"2026-05-02 13:47:00\",\"accountNumber\":\"18883868386\",\"subAccount\":null,\"code\":null,\"content\":\"Cong ty tnhh song viet\",\"transferType\":\"in\",\"description\":\"BankAPINotify Cong ty tnhh song viet\",\"transferAmount\":10000,\"referenceCode\":\"203CTMB261222068\",\"accumulated\":648829,\"id\":55038081}' -w \"\\\\nSTATUS: %{http_code}\\\\n\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://app.casso.vn)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://casso.vn)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://my.casso.vn)",
+      "Bash(curl -sL -o /dev/null -w \"%{url_effective}\" https://my.casso.vn)",
+      "WebFetch(domain:casso.vn)",
+      "WebFetch(domain:bizzi.vn)",
+      "WebFetch(domain:www.misa.vn)",
+      "WebFetch(domain:www.google.com)"
     ]
   }
 }
