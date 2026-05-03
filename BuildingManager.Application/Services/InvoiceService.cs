@@ -113,7 +113,25 @@ public class InvoiceService : IInvoiceService
         if (invoice == null) return null;
 
         invoice.Status = InvoiceStatus.Paid;
-        invoice.PaidDate = dto.PaidDate;
+        invoice.PaidDate = DateTime.SpecifyKind(dto.PaidDate, DateTimeKind.Utc);
+        await _db.SaveChangesAsync();
+        return await GetByIdAsync(id);
+    }
+
+    public async Task<InvoiceDto?> UpdateStatusAsync(int id, InvoiceStatus status)
+    {
+        var invoice = await _db.Invoices.FindAsync(id);
+        if (invoice == null) return null;
+
+        invoice.Status = status;
+        if (status == InvoiceStatus.Paid)
+        {
+            invoice.PaidDate ??= DateTime.UtcNow;
+        }
+        else
+        {
+            invoice.PaidDate = null;
+        }
         await _db.SaveChangesAsync();
         return await GetByIdAsync(id);
     }

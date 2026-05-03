@@ -1,4 +1,5 @@
 using BuildingManager.Application.DTOs;
+using BuildingManager.Domain.Enums;
 
 namespace BuildingManager.Application.Interfaces;
 
@@ -10,6 +11,7 @@ public interface IInvoiceService
     Task<InvoiceDto> CreateAsync(CreateInvoiceDto dto);
     Task<InvoiceDto> CreateFromPdfAsync(CreateInvoiceFromPdfDto dto);
     Task<InvoiceDto?> MarkAsPaidAsync(int id, PayInvoiceDto dto);
+    Task<InvoiceDto?> UpdateStatusAsync(int id, InvoiceStatus status);
     Task<bool> DeleteAsync(int id);
     Task<DashboardDto> GetDashboardAsync();
 }

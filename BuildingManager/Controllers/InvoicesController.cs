@@ -1,5 +1,6 @@
 using BuildingManager.Application.DTOs;
 using BuildingManager.Application.Interfaces;
+using BuildingManager.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuildingManager.Controllers;
@@ -38,6 +39,18 @@ public class InvoicesController : ControllerBase
     public async Task<IActionResult> MarkAsPaid(int id, PayInvoiceDto dto)
     {
         var result = await _service.MarkAsPaidAsync(id, dto);
+        return result == null ? NotFound() : Ok(result);
+    }
+
+    public class UpdateStatusRequest
+    {
+        public InvoiceStatus Status { get; set; }
+    }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusRequest body)
+    {
+        var result = await _service.UpdateStatusAsync(id, body.Status);
         return result == null ? NotFound() : Ok(result);
     }
 

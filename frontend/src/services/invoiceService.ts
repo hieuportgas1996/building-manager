@@ -13,6 +13,8 @@ export const invoiceService = {
   create: (data: object) => api.post<Invoice>('/invoices', data).then(r => r.data),
   markAsPaid: (id: number, paidDate: string) =>
     api.patch<Invoice>(`/invoices/${id}/pay`, { paidDate }).then(r => r.data),
+  updateStatus: (id: number, status: number) =>
+    api.patch<Invoice>(`/invoices/${id}/status`, { status }).then(r => r.data),
   delete: (id: number) => api.delete(`/invoices/${id}`),
   getDashboard: () => api.get<Dashboard>('/dashboard').then(r => r.data),
 };

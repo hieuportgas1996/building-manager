@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Modal, Form, Select, InputNumber, DatePicker, Input, Space, Popconfirm, message, Grid } from 'antd';
-import { PlusOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Button, Modal, Form, Select, InputNumber, DatePicker, Input, Space, Popconfirm, message, Grid, Tag } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { invoiceService } from '../../services/invoiceService';
 import { contractService } from '../../services/contractService';
 import { Invoice, InvoiceStatus, Contract } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/format';
-import { InvoiceStatusTag } from '../../components/StatusTag';
 
 const { useBreakpoint } = Grid;
 
@@ -14,6 +13,31 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: `T${
 const MONTHS_FULL = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: `Tháng ${i + 1}` }));
 const currentYear = new Date().getFullYear();
 const YEARS = [currentYear - 1, currentYear, currentYear + 1].map(y => ({ value: y, label: `${y}` }));
+
+const STATUS_OPTIONS = [
+  { value: InvoiceStatus.Pending, label: 'Chờ thanh toán', color: '#3b6ef5' },
+  { value: InvoiceStatus.Paid, label: 'Đã thanh toán', color: '#10b981' },
+  { value: InvoiceStatus.Overdue, label: 'Quá hạn', color: '#ef4444' },
+];
+
+function StatusSelector({ value, onChange, size = 'small' }: { value: InvoiceStatus; onChange: (v: InvoiceStatus) => void; size?: 'small' | 'middle' }) {
+  const opt = STATUS_OPTIONS.find(o => o.value === value);
+  return (
+    <Select
+      size={size}
+      value={value}
+      onChange={onChange}
+      style={{ width: 140 }}
+      options={STATUS_OPTIONS.map(o => ({
+        value: o.value,
+        label: <Tag color={o.color} style={{ margin: 0 }}>{o.label}</Tag>,
+      }))}
+      suffixIcon={null}
+      bordered={false}
+      dropdownStyle={{ minWidth: 160 }}
+    />
+  );
+}
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -45,10 +69,10 @@ export default function InvoicesPage() {
     } catch {}
   };
 
-  const handlePay = async (id: number) => {
+  const handleStatusChange = async (id: number, status: InvoiceStatus) => {
     try {
-      await invoiceService.markAsPaid(id, new Date().toISOString());
-      message.success('Đã xác nhận thanh toán');
+      await invoiceService.updateStatus(id, status);
+      message.success('Đã cập nhật trạng thái');
       load();
     } catch {
       message.error('Không thể cập nhật');
@@ -67,33 +91,40 @@ export default function InvoicesPage() {
 
   const mobileColumns = [
     {
+      title: 'STT',
+      width: 40,
+      align: 'center' as const,
+      render: (_: unknown, __: Invoice, idx: number) => idx + 1,
+    },
+    {
       title: 'Hóa đơn',
       render: (_: unknown, r: Invoice) => (
         <div>
           <div style={{ fontWeight: 600, fontSize: 13 }}>{r.companyName}</div>
           <div style={{ color: '#888', fontSize: 12 }}>{r.officeName} · {r.invoiceMonth}/{r.invoiceYear}</div>
-          <div style={{ fontWeight: 700, color: '#1677ff', fontSize: 13 }}>{formatCurrency(r.totalAmount)}</div>
-          <InvoiceStatusTag status={r.status} />
+          <div style={{ fontWeight: 700, color: '#3b6ef5', fontSize: 13, marginBottom: 4 }}>{formatCurrency(r.totalAmount)}</div>
+          <StatusSelector value={r.status} onChange={s => handleStatusChange(r.id, s)} />
         </div>
       ),
     },
     {
       title: '',
-      width: 90,
+      width: 40,
       render: (_: unknown, record: Invoice) => (
-        <Space size={4} direction="vertical">
-          {record.status !== InvoiceStatus.Paid && (
-            <Button size="small" type="primary" icon={<CheckOutlined />} onClick={() => handlePay(record.id)} block>TT</Button>
-          )}
-          <Popconfirm title="Xóa?" onConfirm={() => handleDelete(record.id)} okText="Xóa" cancelText="Hủy">
-            <Button size="small" danger icon={<DeleteOutlined />} block />
-          </Popconfirm>
-        </Space>
+        <Popconfirm title="Xóa?" onConfirm={() => handleDelete(record.id)} okText="Xóa" cancelText="Hủy">
+          <Button size="small" danger icon={<DeleteOutlined />} />
+        </Popconfirm>
       ),
     },
   ];
 
   const desktopColumns = [
+    {
+      title: 'STT',
+      width: 60,
+      align: 'center' as const,
+      render: (_: unknown, __: Invoice, idx: number) => idx + 1,
+    },
     { title: 'Công ty', dataIndex: 'companyName', ellipsis: true },
     { title: 'VP', dataIndex: 'officeName', width: 80 },
     { title: 'Kỳ', width: 70, render: (_: unknown, r: Invoice) => `${r.invoiceMonth}/${r.invoiceYear}` },
@@ -101,21 +132,23 @@ export default function InvoicesPage() {
     { title: 'Điện', dataIndex: 'electricityAmount', width: 110, render: formatCurrency },
     { title: 'Nước', dataIndex: 'waterAmount', width: 100, render: formatCurrency },
     { title: 'DV', dataIndex: 'serviceFee', width: 100, render: formatCurrency },
-    { title: 'Tổng cộng', dataIndex: 'totalAmount', width: 140, render: (v: number) => <strong style={{ color: '#1677ff' }}>{formatCurrency(v)}</strong> },
+    { title: 'Tổng cộng', dataIndex: 'totalAmount', width: 140, render: (v: number) => <strong style={{ color: '#3b6ef5' }}>{formatCurrency(v)}</strong> },
     { title: 'Hạn TT', dataIndex: 'dueDate', width: 100, render: formatDate },
     { title: 'Ngày TT', dataIndex: 'paidDate', width: 100, render: (v?: string) => v ? formatDate(v) : '-' },
-    { title: 'Trạng thái', dataIndex: 'status', width: 130, render: (s: InvoiceStatus) => <InvoiceStatusTag status={s} /> },
     {
-      title: 'Thao tác', width: 120,
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      width: 160,
+      render: (s: InvoiceStatus, r: Invoice) => (
+        <StatusSelector value={s} onChange={ns => handleStatusChange(r.id, ns)} />
+      ),
+    },
+    {
+      title: 'Thao tác', width: 80, align: 'center' as const,
       render: (_: unknown, record: Invoice) => (
-        <Space>
-          {record.status !== InvoiceStatus.Paid && (
-            <Button size="small" type="primary" icon={<CheckOutlined />} onClick={() => handlePay(record.id)}>TT</Button>
-          )}
-          <Popconfirm title="Xác nhận xóa?" onConfirm={() => handleDelete(record.id)} okText="Xóa" cancelText="Hủy">
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
+        <Popconfirm title="Xác nhận xóa?" onConfirm={() => handleDelete(record.id)} okText="Xóa" cancelText="Hủy">
+          <Button size="small" danger icon={<DeleteOutlined />} />
+        </Popconfirm>
       ),
     },
   ];
@@ -138,7 +171,7 @@ export default function InvoicesPage() {
         columns={isMobile ? mobileColumns : desktopColumns}
         rowKey="id"
         loading={loading}
-        scroll={{ x: isMobile ? undefined : 1200 }}
+        scroll={{ x: isMobile ? undefined : 1300 }}
         size="small"
       />
 
