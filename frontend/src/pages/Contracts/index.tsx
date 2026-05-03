@@ -8,6 +8,7 @@ import { officeService } from '../../services/officeService';
 import { Contract, ContractStatus, Company, Office, OfficeStatus } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { ContractStatusTag } from '../../components/StatusTag';
+import { defaultPagination } from '../../utils/tablePagination';
 
 const { useBreakpoint } = Grid;
 
@@ -146,6 +147,7 @@ export default function ContractsPage() {
         loading={loading}
         scroll={{ x: isMobile ? undefined : 1000 }}
         size="small"
+        pagination={defaultPagination}
       />
 
       <Modal

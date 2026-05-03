@@ -6,6 +6,7 @@ import { invoiceService } from '../../services/invoiceService';
 import { contractService } from '../../services/contractService';
 import { Invoice, InvoiceStatus, Contract } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/format';
+import { defaultPagination } from '../../utils/tablePagination';
 
 const { useBreakpoint } = Grid;
 
@@ -173,6 +174,7 @@ export default function InvoicesPage() {
         loading={loading}
         scroll={{ x: isMobile ? undefined : 1300 }}
         size="small"
+        pagination={defaultPagination}
       />
 
       <Modal

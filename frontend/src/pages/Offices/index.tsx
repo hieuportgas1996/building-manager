@@ -6,6 +6,7 @@ import { buildingService, BuildingDto, FloorDto } from '../../services/buildingS
 import { Office, OfficeStatus } from '../../types';
 import { formatCurrency } from '../../utils/format';
 import { OfficeStatusTag } from '../../components/StatusTag';
+import { defaultPagination } from '../../utils/tablePagination';
 
 const { useBreakpoint } = Grid;
 
@@ -151,6 +152,7 @@ export default function OfficesPage() {
         dataSource={offices} columns={isMobile ? mobileColumns : desktopColumns}
         rowKey="id" loading={loading}
         scroll={{ x: isMobile ? undefined : 900 }} size="small"
+        pagination={defaultPagination}
       />
 
       <Modal

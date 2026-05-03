@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { companyService } from '../../services/companyService';
 import { Company } from '../../types';
 import { formatDate } from '../../utils/format';
+import { defaultPagination } from '../../utils/tablePagination';
 
 const { useBreakpoint } = Grid;
 
@@ -132,6 +133,7 @@ export default function CompaniesPage() {
         loading={loading}
         scroll={{ x: isMobile ? undefined : 900 }}
         size="small"
+        pagination={defaultPagination}
       />
 
       <Modal

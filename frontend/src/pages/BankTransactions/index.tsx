@@ -9,6 +9,7 @@ import { bankTransactionService, BankTransaction } from '../../services/bankTran
 import { invoiceService } from '../../services/invoiceService';
 import { Invoice, InvoiceStatus } from '../../types';
 import { formatCurrency } from '../../utils/format';
+import { defaultPagination } from '../../utils/tablePagination';
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -183,6 +184,7 @@ export default function BankTransactionsPage() {
         size="small"
         scroll={{ x: isMobile ? undefined : 1000 }}
         locale={{ emptyText: 'Chưa có giao dịch nào' }}
+        pagination={defaultPagination}
       />
 
       <Modal
