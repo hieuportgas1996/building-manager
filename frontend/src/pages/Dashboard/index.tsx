@@ -46,7 +46,13 @@ function StatCard({ title, value, icon, gradient, trend, isMobile }: StatCardPro
           {icon}
         </div>
       </div>
-      <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
+      <div style={{
+        fontSize: isMobile ? 16 : 22,
+        fontWeight: 700,
+        color: '#0f172a',
+        lineHeight: 1.2,
+        wordBreak: 'break-word',
+      }}>
         {value}
       </div>
       {trend && (
@@ -76,9 +82,7 @@ export default function DashboardPage() {
   if (error) return <Alert type="error" message={error} />;
   if (!data) return null;
 
-  const fmtMoney = (v: number) => isMobile
-    ? `${Math.round(v / 1_000_000)}M`
-    : formatCurrency(v);
+  const fmtMoney = (v: number) => formatCurrency(v);
 
   const chartData = data.revenueChart.map(r => ({
     name: r.label,
