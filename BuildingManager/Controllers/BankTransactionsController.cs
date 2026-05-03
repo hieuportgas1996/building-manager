@@ -46,6 +46,30 @@ public class BankTransactionsController : ControllerBase
         }
     }
 
+    [HttpPost("webhook/casso")]
+    public async Task<IActionResult> CassoWebhook([FromBody] CassoWebhookDto dto)
+    {
+        var expectedToken = _config["Casso:ApiKey"];
+        if (!string.IsNullOrEmpty(expectedToken))
+        {
+            var auth = Request.Headers["Secure-Token"].ToString();
+            if (string.IsNullOrEmpty(auth) || auth != expectedToken)
+            {
+                return Unauthorized();
+            }
+        }
+
+        try
+        {
+            var results = await _service.ProcessCassoWebhookAsync(dto);
+            return Ok(new { error = 0, message = "Success", count = results.Count });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = 1, message = ex.Message, inner = ex.InnerException?.Message });
+        }
+    }
+
     [HttpPost("{transactionId}/match/{invoiceId}")]
     public async Task<IActionResult> ManualMatch(int transactionId, int invoiceId)
     {

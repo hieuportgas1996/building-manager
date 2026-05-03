@@ -28,3 +28,30 @@ public class SepayWebhookDto
     public string? Code { get; set; }
     public string? SubAccount { get; set; }
 }
+
+public class CassoWebhookDto
+{
+    public string Error { get; set; } = string.Empty;
+    public List<CassoTransactionData> Data { get; set; } = new();
+}
+
+public class CassoTransactionData
+{
+    public long Id { get; set; }
+    public string Tid { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public decimal Cusum_balance { get; set; }
+    public string When { get; set; } = string.Empty;
+    public string BookingDate { get; set; } = string.Empty;
+    public string BankSubAccId { get; set; } = string.Empty;
+    public int SubAccId { get; set; }
+    public string BankName { get; set; } = string.Empty;
+    public string BankAbbreviation { get; set; } = string.Empty;
+    public string VirtualAccount { get; set; } = string.Empty;
+    public string VirtualAccountName { get; set; } = string.Empty;
+    public string CorresponsiveName { get; set; } = string.Empty;
+    public string CorresponsiveAccount { get; set; } = string.Empty;
+    public string CorresponsiveBankId { get; set; } = string.Empty;
+    public string CorresponsiveBankName { get; set; } = string.Empty;
+}

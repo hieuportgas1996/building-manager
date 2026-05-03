@@ -66,6 +66,59 @@ public class BankTransactionService
         return MapToDto(tx);
     }
 
+    public async Task<List<BankTransactionDto>> ProcessCassoWebhookAsync(CassoWebhookDto dto)
+    {
+        var results = new List<BankTransactionDto>();
+        if (dto.Data == null) return results;
+
+        foreach (var item in dto.Data)
+        {
+            // skip outgoing transactions (negative amount)
+            if (item.Amount <= 0)
+            {
+                var skip = new BankTransaction
+                {
+                    Gateway = string.IsNullOrEmpty(item.BankAbbreviation) ? item.BankName : item.BankAbbreviation,
+                    TransactionDate = ParseDate(item.When),
+                    AccountNumber = item.BankSubAccId,
+                    TransferAmount = Math.Abs(item.Amount),
+                    TransferType = "out",
+                    Content = item.Description ?? string.Empty,
+                    ReferenceCode = item.Tid,
+                };
+                _db.BankTransactions.Add(skip);
+                await _db.SaveChangesAsync();
+                results.Add(MapToDto(skip));
+                continue;
+            }
+
+            var tx = new BankTransaction
+            {
+                Gateway = string.IsNullOrEmpty(item.BankAbbreviation) ? item.BankName : item.BankAbbreviation,
+                TransactionDate = ParseDate(item.When),
+                AccountNumber = item.BankSubAccId,
+                TransferAmount = item.Amount,
+                TransferType = "in",
+                Content = item.Description ?? string.Empty,
+                ReferenceCode = item.Tid,
+            };
+
+            var matched = await TryMatchInvoiceAsync(tx);
+            if (matched != null)
+            {
+                tx.MatchedInvoiceId = matched.Id;
+                matched.Status = InvoiceStatus.Paid;
+                matched.PaidDate = DateTime.SpecifyKind(tx.TransactionDate, DateTimeKind.Utc);
+            }
+
+            _db.BankTransactions.Add(tx);
+            await _db.SaveChangesAsync();
+            results.Add(MapToDto(tx));
+        }
+
+        return results;
+    }
+
     public async Task<BankTransactionDto?> ManualMatchAsync(int transactionId, int invoiceId)
     {
         var tx = await _db.BankTransactions.FindAsync(transactionId);
