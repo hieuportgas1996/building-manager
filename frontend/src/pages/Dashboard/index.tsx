@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Row, Col, Card, Table, Spin, Alert, Grid, Typography } from 'antd';
+import { Row, Col, Card, Spin, Alert, Grid, Typography } from 'antd';
 import {
   BankOutlined, FileTextOutlined, HomeOutlined, DollarOutlined,
   WarningOutlined, RiseOutlined, ArrowUpOutlined,
@@ -9,8 +9,7 @@ import {
 } from 'recharts';
 import { invoiceService } from '../../services/invoiceService';
 import { Dashboard } from '../../types';
-import { formatCurrency, formatDate } from '../../utils/format';
-import { InvoiceStatusTag } from '../../components/StatusTag';
+import { formatCurrency } from '../../utils/format';
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -89,21 +88,6 @@ export default function DashboardPage() {
     'Đã thu': Math.round(r.paidAmount / 1_000_000),
     'Chờ thu': Math.round(r.pendingAmount / 1_000_000),
   }));
-
-  const recentColumns = isMobile
-    ? [
-        { title: 'Công ty', dataIndex: 'companyName', ellipsis: true },
-        { title: 'Tổng tiền', dataIndex: 'totalAmount', render: formatCurrency },
-        { title: 'TT', dataIndex: 'status', render: (s: number) => <InvoiceStatusTag status={s} /> },
-      ]
-    : [
-        { title: 'Công ty', dataIndex: 'companyName', ellipsis: true },
-        { title: 'Văn phòng', dataIndex: 'officeName', width: 90 },
-        { title: 'Tháng', render: (_: unknown, r: { invoiceMonth: number; invoiceYear: number }) => `${r.invoiceMonth}/${r.invoiceYear}`, width: 80 },
-        { title: 'Tổng tiền', dataIndex: 'totalAmount', render: formatCurrency },
-        { title: 'Trạng thái', dataIndex: 'status', render: (s: number) => <InvoiceStatusTag status={s} /> },
-        { title: 'Hạn TT', dataIndex: 'dueDate', render: formatDate, width: 100 },
-      ];
 
   return (
     <div>
@@ -189,21 +173,6 @@ export default function DashboardPage() {
             <Bar dataKey="Chờ thu" fill="#3b6ef5" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
-      </Card>
-
-      <Card
-        title={<span style={{ fontSize: 15, fontWeight: 600 }}>Hóa đơn gần đây</span>}
-        bordered={false}
-        style={{ marginTop: 16, boxShadow: '0 1px 3px rgba(15,23,42,0.04)' }}
-      >
-        <Table
-          dataSource={data.recentInvoices}
-          columns={recentColumns}
-          rowKey="id"
-          pagination={false}
-          size="small"
-          scroll={{ x: isMobile ? undefined : 600 }}
-        />
       </Card>
     </div>
   );

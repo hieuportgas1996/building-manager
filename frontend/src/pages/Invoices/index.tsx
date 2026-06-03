@@ -13,7 +13,10 @@ const { useBreakpoint } = Grid;
 const MONTHS = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: `T${i + 1}` }));
 const MONTHS_FULL = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: `Tháng ${i + 1}` }));
 const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth() + 1;
 const YEARS = [currentYear - 1, currentYear, currentYear + 1].map(y => ({ value: y, label: `${y}` }));
+
+const lastDayOfMonth = (year: number, month: number) => dayjs(`${year}-${month}-01`).endOf('month');
 
 const STATUS_OPTIONS = [
   { value: InvoiceStatus.Pending, label: 'Chờ thanh toán', color: '#3b6ef5' },
@@ -59,6 +62,22 @@ export default function InvoicesPage() {
   };
 
   useEffect(() => { load(); }, [filterYear, filterMonth]);
+
+  const openCreate = () => {
+    form.resetFields();
+    form.setFieldsValue({
+      invoiceYear: currentYear,
+      invoiceMonth: currentMonth,
+      dueDate: lastDayOfMonth(currentYear, currentMonth),
+    });
+    setModalOpen(true);
+  };
+
+  const syncDueDate = () => {
+    const year = form.getFieldValue('invoiceYear');
+    const month = form.getFieldValue('invoiceMonth');
+    if (year && month) form.setFieldValue('dueDate', lastDayOfMonth(year, month));
+  };
 
   const handleSave = async () => {
     try {
@@ -158,7 +177,7 @@ export default function InvoicesPage() {
         <Space wrap size={6}>
           <Select placeholder="Năm" options={YEARS} value={filterYear} onChange={setFilterYear} allowClear style={{ width: 90 }} />
           <Select placeholder="Tháng" options={isMobile ? MONTHS : MONTHS_FULL} value={filterMonth} onChange={setFilterMonth} allowClear style={{ width: isMobile ? 70 : 110 }} />
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => { form.resetFields(); setModalOpen(true); }}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             {isMobile ? 'Tạo' : 'Tạo hóa đơn'}
           </Button>
         </Space>
@@ -196,14 +215,14 @@ export default function InvoicesPage() {
               }))}
             />
           </Form.Item>
-          <Space style={{ width: '100%', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 12 }}>
             <Form.Item name="invoiceYear" label="Năm" rules={[{ required: true }]} style={{ flex: 1 }}>
-              <Select options={YEARS} />
+              <Select options={YEARS} onChange={syncDueDate} />
             </Form.Item>
             <Form.Item name="invoiceMonth" label="Tháng" rules={[{ required: true }]} style={{ flex: 1 }}>
-              <Select options={MONTHS_FULL} />
+              <Select options={MONTHS_FULL} onChange={syncDueDate} />
             </Form.Item>
-          </Space>
+          </div>
           <Form.Item name="rentAmount" label="Tiền thuê (VND)" rules={[{ required: true }]}>
             <InputNumber style={{ width: '100%' }} min={0} step={1000000} inputMode="numeric" formatter={v => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
           </Form.Item>
@@ -211,7 +230,7 @@ export default function InvoicesPage() {
             <InputNumber style={{ width: '100%' }} min={0} step={100000} inputMode="numeric" formatter={v => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
           </Form.Item>
           <Form.Item name="dueDate" label="Hạn thanh toán" rules={[{ required: true }]}>
-            <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" inputReadOnly={isMobile} defaultValue={dayjs().add(15, 'day')} />
+            <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" inputReadOnly={isMobile} />
           </Form.Item>
           <Form.Item name="notes" label="Ghi chú">
             <Input.TextArea rows={2} />
