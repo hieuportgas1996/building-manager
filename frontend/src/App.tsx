@@ -4,11 +4,8 @@ import viVN from 'antd/locale/vi_VN';
 import AppLayout from './components/AppLayout';
 import DashboardPage from './pages/Dashboard';
 import CompaniesPage from './pages/Companies';
-import OfficesPage from './pages/Offices';
-import ContractsPage from './pages/Contracts';
 import InvoicesPage from './pages/Invoices';
 import PdfImportPage from './pages/PdfImport';
-import BuildingsPage from './pages/Buildings';
 import BankTransactionsPage from './pages/BankTransactions';
 
 const theme = {
@@ -63,10 +60,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/companies" element={<CompaniesPage />} />
-            <Route path="/offices" element={<OfficesPage />} />
-            <Route path="/contracts" element={<ContractsPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
-            <Route path="/buildings" element={<BuildingsPage />} />
             <Route path="/bank-transactions" element={<BankTransactionsPage />} />
             <Route path="/pdf-import" element={<PdfImportPage />} />
           </Routes>

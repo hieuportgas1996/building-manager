@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Layout, Menu, Drawer, Button, Avatar, Badge } from 'antd';
 import {
-  DashboardOutlined, BankOutlined, FileTextOutlined,
-  DollarOutlined, HomeOutlined, MenuOutlined, FilePdfOutlined, AppstoreOutlined,
+  DashboardOutlined, BankOutlined,
+  DollarOutlined, MenuOutlined, FilePdfOutlined,
   TransactionOutlined, BellOutlined, SearchOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -20,9 +20,6 @@ const menuGroups = [
     label: 'QUẢN LÝ',
     items: [
       { key: '/companies', icon: <BankOutlined />, label: 'Công ty' },
-      { key: '/buildings', icon: <HomeOutlined />, label: 'Tòa nhà' },
-      { key: '/offices', icon: <AppstoreOutlined />, label: 'Văn phòng' },
-      { key: '/contracts', icon: <FileTextOutlined />, label: 'Hợp đồng' },
       { key: '/invoices', icon: <DollarOutlined />, label: 'Hóa đơn' },
     ],
   },

@@ -24,7 +24,7 @@ public class InvoiceDto
 
 public class CreateInvoiceDto
 {
-    public int ContractId { get; set; }
+    public int CompanyId { get; set; }
     public int InvoiceYear { get; set; }
     public int InvoiceMonth { get; set; }
     public decimal RentAmount { get; set; }

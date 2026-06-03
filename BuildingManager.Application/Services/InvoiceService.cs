@@ -89,7 +89,7 @@ public class InvoiceService : IInvoiceService
         var total = dto.RentAmount + dto.ElectricityAmount + dto.WaterAmount + dto.ServiceFee;
         var invoice = new Invoice
         {
-            ContractId = dto.ContractId,
+            CompanyId = dto.CompanyId,
             InvoiceYear = dto.InvoiceYear,
             InvoiceMonth = dto.InvoiceMonth,
             RentAmount = dto.RentAmount,

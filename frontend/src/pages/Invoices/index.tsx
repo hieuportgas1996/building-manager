@@ -3,8 +3,8 @@ import { Table, Button, Modal, Form, Select, InputNumber, DatePicker, Input, Spa
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { invoiceService } from '../../services/invoiceService';
-import { contractService } from '../../services/contractService';
-import { Invoice, InvoiceStatus, Contract } from '../../types';
+import { companyService } from '../../services/companyService';
+import { Invoice, InvoiceStatus, Company } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { defaultPagination } from '../../utils/tablePagination';
 
@@ -42,7 +42,7 @@ function StatusSelector({ value, onChange, size = 'small' }: { value: InvoiceSta
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [filterYear, setFilterYear] = useState<number | undefined>(currentYear);
@@ -53,8 +53,8 @@ export default function InvoicesPage() {
 
   const load = () => {
     setLoading(true);
-    Promise.all([invoiceService.getAll(filterYear, filterMonth), contractService.getAll()])
-      .then(([inv, con]) => { setInvoices(inv); setContracts(con); })
+    Promise.all([invoiceService.getAll(filterYear, filterMonth), companyService.getAll()])
+      .then(([inv, com]) => { setInvoices(inv); setCompanies(com); })
       .finally(() => setLoading(false));
   };
 
@@ -102,7 +102,7 @@ export default function InvoicesPage() {
       render: (_: unknown, r: Invoice) => (
         <div>
           <div style={{ fontWeight: 600, fontSize: 13 }}>{r.companyName}</div>
-          <div style={{ color: '#888', fontSize: 12 }}>{r.officeName} · {r.invoiceMonth}/{r.invoiceYear}</div>
+          <div style={{ color: '#888', fontSize: 12 }}>{r.invoiceMonth}/{r.invoiceYear}</div>
           <div style={{ fontWeight: 700, color: '#3b6ef5', fontSize: 13, marginBottom: 4 }}>{formatCurrency(r.totalAmount)}</div>
           <StatusSelector value={r.status} onChange={s => handleStatusChange(r.id, s)} />
         </div>
@@ -127,12 +127,9 @@ export default function InvoicesPage() {
       render: (_: unknown, __: Invoice, idx: number) => idx + 1,
     },
     { title: 'Công ty', dataIndex: 'companyName', ellipsis: true },
-    { title: 'VP', dataIndex: 'officeName', width: 80 },
     { title: 'Kỳ', width: 70, render: (_: unknown, r: Invoice) => `${r.invoiceMonth}/${r.invoiceYear}` },
     { title: 'Tiền thuê', dataIndex: 'rentAmount', width: 130, render: formatCurrency },
     { title: 'Điện', dataIndex: 'electricityAmount', width: 110, render: formatCurrency },
-    { title: 'Nước', dataIndex: 'waterAmount', width: 100, render: formatCurrency },
-    { title: 'DV', dataIndex: 'serviceFee', width: 100, render: formatCurrency },
     { title: 'Tổng cộng', dataIndex: 'totalAmount', width: 140, render: (v: number) => <strong style={{ color: '#3b6ef5' }}>{formatCurrency(v)}</strong> },
     { title: 'Hạn TT', dataIndex: 'dueDate', width: 100, render: formatDate },
     { title: 'Ngày TT', dataIndex: 'paidDate', width: 100, render: (v?: string) => v ? formatDate(v) : '-' },
@@ -189,13 +186,13 @@ export default function InvoicesPage() {
         styles={isMobile ? { body: { maxHeight: 'calc(100dvh - 110px)', overflowY: 'auto' } } : {}}
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="contractId" label="Hợp đồng" rules={[{ required: true }]}>
+          <Form.Item name="companyId" label="Công ty" rules={[{ required: true }]}>
             <Select
               showSearch
               optionFilterProp="label"
-              options={contracts.filter(c => c.status === 1).map(c => ({
+              options={companies.map(c => ({
                 value: c.id,
-                label: `${c.companyName} - ${c.officeName} (${formatCurrency(c.monthlyRent)}/tháng)`
+                label: c.name,
               }))}
             />
           </Form.Item>
@@ -211,12 +208,6 @@ export default function InvoicesPage() {
             <InputNumber style={{ width: '100%' }} min={0} step={1000000} inputMode="numeric" formatter={v => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
           </Form.Item>
           <Form.Item name="electricityAmount" label="Tiền điện (VND)" rules={[{ required: true }]}>
-            <InputNumber style={{ width: '100%' }} min={0} step={100000} inputMode="numeric" formatter={v => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
-          </Form.Item>
-          <Form.Item name="waterAmount" label="Tiền nước (VND)" rules={[{ required: true }]}>
-            <InputNumber style={{ width: '100%' }} min={0} step={100000} inputMode="numeric" formatter={v => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
-          </Form.Item>
-          <Form.Item name="serviceFee" label="Phí dịch vụ (VND)" rules={[{ required: true }]}>
             <InputNumber style={{ width: '100%' }} min={0} step={100000} inputMode="numeric" formatter={v => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
           </Form.Item>
           <Form.Item name="dueDate" label="Hạn thanh toán" rules={[{ required: true }]}>
