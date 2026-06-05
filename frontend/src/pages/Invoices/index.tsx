@@ -49,7 +49,8 @@ export default function InvoicesPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [filterYear, setFilterYear] = useState<number | undefined>(currentYear);
-  const [filterMonth, setFilterMonth] = useState<number | undefined>();
+  const [filterMonth, setFilterMonth] = useState<number | undefined>(currentMonth);
+  const [filterStatus, setFilterStatus] = useState<InvoiceStatus | undefined>();
   const [form] = Form.useForm();
   const screens = useBreakpoint();
   const isMobile = !screens.sm;
@@ -177,6 +178,14 @@ export default function InvoicesPage() {
         <Space wrap size={6}>
           <Select placeholder="Năm" options={YEARS} value={filterYear} onChange={setFilterYear} allowClear style={{ width: 90 }} />
           <Select placeholder="Tháng" options={isMobile ? MONTHS : MONTHS_FULL} value={filterMonth} onChange={setFilterMonth} allowClear style={{ width: isMobile ? 70 : 110 }} />
+          <Select
+            placeholder="Trạng thái"
+            options={STATUS_OPTIONS.map(o => ({ value: o.value, label: o.label }))}
+            value={filterStatus}
+            onChange={setFilterStatus}
+            allowClear
+            style={{ width: isMobile ? 130 : 150 }}
+          />
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             {isMobile ? 'Tạo' : 'Tạo hóa đơn'}
           </Button>
@@ -184,7 +193,7 @@ export default function InvoicesPage() {
       </div>
 
       <Table
-        dataSource={invoices}
+        dataSource={filterStatus === undefined ? invoices : invoices.filter(i => i.status === filterStatus)}
         columns={isMobile ? mobileColumns : desktopColumns}
         rowKey="id"
         loading={loading}

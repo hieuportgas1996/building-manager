@@ -3,7 +3,6 @@ import { Table, Button, Modal, Form, Input, Space, Popconfirm, message, Tag, Gri
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { companyService } from '../../services/companyService';
 import { Company } from '../../types';
-import { formatDate } from '../../utils/format';
 import { defaultPagination } from '../../utils/tablePagination';
 
 const { useBreakpoint } = Grid;
@@ -92,18 +91,13 @@ export default function CompaniesPage() {
       align: 'center' as const,
       render: (_: unknown, __: Company, idx: number) => idx + 1,
     },
-    { title: 'Tên công ty', dataIndex: 'name', width: 200, ellipsis: true },
+    { title: 'Tên công ty', dataIndex: 'name', width: 320 },
     { title: 'Mã số thuế', dataIndex: 'taxCode', width: 140 },
     { title: 'Địa chỉ thuế', dataIndex: 'taxAddress', ellipsis: true },
     {
       title: 'Email', dataIndex: 'contactEmail', width: 200, ellipsis: true,
       render: (v?: string) => v ? <a href={`mailto:${v}`}>{v}</a> : '-',
     },
-    {
-      title: 'HĐ hiệu lực', dataIndex: 'activeContractsCount', width: 110,
-      render: (v: number) => <Tag color={v > 0 ? 'green' : 'default'}>{v} hợp đồng</Tag>,
-    },
-    { title: 'Ngày tạo', dataIndex: 'createdAt', width: 110, render: formatDate },
     {
       title: 'Thao tác', width: 90,
       render: (_: unknown, record: Company) => (
@@ -131,7 +125,7 @@ export default function CompaniesPage() {
         columns={isMobile ? mobileColumns : desktopColumns}
         rowKey="id"
         loading={loading}
-        scroll={{ x: isMobile ? undefined : 900 }}
+        scroll={{ x: isMobile ? undefined : 1000 }}
         size="small"
         pagination={defaultPagination}
       />
